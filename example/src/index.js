@@ -22,4 +22,10 @@ let g = ({ items }) => (
 	</ol>
 )
 
+let h = <Component a="5" { ...props } />
+
+let i = <Component a={ x } />
+
+let j = <Component>{ ...props.children }{ ...props.after }{ ...[1, 2, 3] }</Component>
+
 export default a

@@ -5,15 +5,21 @@ const isCapitalized = s => {
 	return c === c.toUpperCase()
 }
 
-const extractValue = x => t.isJSXExpressionContainer(x) ? x.expression : x
+const attributeToProperty = attr => {
+	if (t.isJSXSpreadAttribute(attr)) {
+		return t.spreadProperty(attr.argument)
+	} else {
+		let { name: { name }, value } = attr
+		return t.objectProperty(
+			t.stringLiteral(name),
+			t.isJSXExpressionContainer(value) ? value.expression : value
+		)
+	}
+}
 
-const metaToProps = meta => meta.map(prop => {
-	let { value } = prop
-	value = extractValue(value)
-	return t.objectProperty(t.stringLiteral(prop.name.name), value)
-})
+const metaToProps = meta => meta.map(attributeToProperty)
 
-const jsxExpression = (x, callees) => t.isJSXExpressionContainer(x) ? x.expression : transformJSX(x, callees)
+const jsxExpression = (x, callees) => t.isJSXExpressionContainer(x) || t.is('JSXSpreadChild', x) ? x.expression : transformJSX(x, callees)
 
 const childrenToNodes = (children, callees) => t.arrayExpression(children.map(c => jsxExpression(c, callees)))
 
