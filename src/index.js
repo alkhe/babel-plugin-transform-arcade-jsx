@@ -5,11 +5,17 @@ const isCapitalized = s => {
 	return c === c.toUpperCase()
 }
 
+const extractValue = x => t.isJSXExpressionContainer(x) ? x.expression : x
+
 const metaToProps = meta => meta.map(prop => {
 	let { value } = prop
-	value = t.isJSXExpressionContainer(value) ? value.expression : value
+	value = extractValue(value)
 	return t.objectProperty(t.stringLiteral(prop.name.name), value)
 })
+
+const jsxExpression = (x, callees) => t.isJSXExpressionContainer(x) ? x.expression : transformJSX(x, callees)
+
+const childrenToNodes = (children, callees) => t.arrayExpression(children.map(c => jsxExpression(c, callees)))
 
 const makeHnode = (label, meta, children, callees) => {
 	let labelArg = t.identifier(label)
@@ -17,7 +23,7 @@ const makeHnode = (label, meta, children, callees) => {
 	let metaList = metaToProps(meta)
 
 	if (children.length > 0) {
-		let childrenArg = t.arrayExpression(children.map(transformJSX))
+		let childrenArg = childrenToNodes(children, callees)
 		metaList.push(t.objectProperty(t.stringLiteral('children'), childrenArg))
 	}
 
@@ -31,7 +37,7 @@ const makeFnode = (label, meta, children, callees) => {
 
 	let metaArg = t.objectExpression(metaToProps(meta))
 
-	let childrenArg = t.arrayExpression(children.map(c => transformJSX(c, callees)))
+	let childrenArg = childrenToNodes(children, callees)
 
 	return t.callExpression(callees[1], [labelArg, metaArg, childrenArg])
 }
