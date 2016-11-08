@@ -3,23 +3,24 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var a = function a(x) {
-  return x + 2;
-};
+/*
+let a = x => x + 2
 
-var b = fnode(div, {
-  'a': '5'
-}, ['Hello!']);
+let b = <div a="5">Hello!</div>
 
-var c = fnode(input, {}, []);
+let c = <input />
+
+let d = <Component some-prop='asd' />
+
+let e = <Component some-prop='asd'>asd</Component>
+*/
 
 var d = hnode(Component, {
   'some-prop': 'asd'
 });
 
-var e = hnode(Component, {
-  'some-prop': 'asd',
-  'children': ['asd']
+var f = hnode(List, {
+  'items': [1]
 });
 
 exports.default = a;
