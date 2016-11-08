@@ -1,0 +1,16 @@
+{
+  "name": "babel-plugin-transform-arcade-jsx",
+  "version": "0.1.0",
+  "description": "Babel transform for Arcade JSX.",
+  "main": "./lib/index.js",
+  "author": "synchronous",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-latest": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0"
+  },
+  "dependencies": {
+    "babel-types": "^6.18.0"
+  }
+}
