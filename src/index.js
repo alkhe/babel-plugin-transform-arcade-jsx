@@ -27,7 +27,7 @@ const makeHnode = (label, meta, children, callees) => {
 }
 
 const makeFnode = (label, meta, children, callees) => {
-	let labelArg = t.identifier(label)
+	let labelArg = t.stringLiteral(label)
 
 	let metaArg = t.objectExpression(metaToProps(meta))
 
