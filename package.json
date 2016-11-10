@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-arcade-jsx",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Babel transform for Arcade JSX.",
   "main": "./lib/index.js",
   "author": "synchronous",
