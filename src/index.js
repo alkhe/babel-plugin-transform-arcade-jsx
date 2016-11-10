@@ -19,52 +19,64 @@ const attributeToProperty = attr => {
 
 const metaToProps = meta => meta.map(attributeToProperty)
 
-const jsxExpression = (x, callees) => t.isJSXExpressionContainer(x) || t.is('JSXSpreadChild', x) ? x.expression : transformJSX(x, callees)
+const jsxExpression = (x, callee) => t.isJSXExpressionContainer(x) || t.is('JSXSpreadChild', x) ? x.expression : transformJSX(x, callee)
 
-const childrenToNodes = (children, callees) => t.arrayExpression(children.map(c => jsxExpression(c, callees)))
+const childrenToNodes = (children, callee) => t.arrayExpression(children.map(c => jsxExpression(c, callee)))
 
-const makeHnode = (label, meta, children, callees) => {
+/* children as prop API
+const makeHnode = (label, meta, children, callee) => {
 	let labelArg = t.identifier(label)
 
 	let metaList = metaToProps(meta)
 
 	if (children.length > 0) {
-		let childrenArg = childrenToNodes(children, callees)
+		let childrenArg = childrenToNodes(children, callee)
 		metaList.push(t.objectProperty(t.stringLiteral('children'), childrenArg))
 	}
 
 	let metaArg = t.objectExpression(metaList)
 
-	return t.callExpression(callees[0], [labelArg, metaArg])
+	return t.callExpression(callee, [labelArg, metaArg])
+}
+*/
+
+const makeHnode = (label, meta, children, callee) => {
+	let labelArg = t.identifier(label)
+
+	let metaArg = t.objectExpression(metaToProps(meta))
+
+	let childrenArg = childrenToNodes(children, callee)
+
+	return t.callExpression(callee, [labelArg, metaArg, childrenArg])
 }
 
-const makeFnode = (label, meta, children, callees) => {
+const makeFnode = (label, meta, children, callee) => {
 	let labelArg = t.stringLiteral(label)
 
 	let metaArg = t.objectExpression(metaToProps(meta))
 
-	let childrenArg = childrenToNodes(children, callees)
+	let childrenArg = childrenToNodes(children, callee)
 
-	return t.callExpression(callees[1], [labelArg, metaArg, childrenArg])
+	return t.callExpression(callee, [labelArg, metaArg, childrenArg])
 }
 
-const transformJSX = (node, callees) => {
+const transformJSX = (node, callee) => {
 	if (t.isJSXText(node)) {
 		return t.stringLiteral(node.value)
 	} else {
-		return transformJSXElement(node, callees)
+		return transformJSXElement(node, callee)
 	}
 }
 
-const transformJSXElement = (node, callees) => {
+const transformJSXElement = (node, callee) => {
 	let jsxOpen = node.openingElement
 	let jsxId = jsxOpen.name
 	let label = jsxId.name
 
 	if (isCapitalized(label)) {
-		return makeHnode(label, jsxOpen.attributes, node.children, callees)
+		return makeHnode(label, jsxOpen.attributes, node.children, callee)
 	} else {
-		return makeFnode(label, jsxOpen.attributes, node.children, callees)
+		return makeFnode(label, jsxOpen.attributes, node.children, callee)
 	}
 }
 
@@ -77,16 +89,12 @@ const plugin = () => {
 	return {
 		visitor: {
 			Program: (_, state) => {
-				let [hnodeId = 'hnode', fnodeId = 'fnode'] = state.opts.pragma || []
-
-				state.set('hnodeId', () => stringToIdentifierExpression(hnodeId))
-				state.set('fnodeId', () => stringToIdentifierExpression(fnodeId))
+				state.set('callee', () => stringToIdentifierExpression(state.opts.pragma || 'v'))
 			},
 			JSXElement: (path, file) => {
-				let hnodeId = file.get('hnodeId')()
-				let fnodeId = file.get('fnodeId')()
+				let callee = file.get('callee')()
 
-				path.replaceWith(transformJSXElement(path.node, [hnodeId, fnodeId]))
+				path.replaceWith(transformJSXElement(path.node, callee))
 			}
 		}
 	}

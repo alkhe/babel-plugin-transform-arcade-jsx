@@ -10,44 +10,41 @@ var a = function a(x) {
 	return x + 2;
 };
 
-var b = fnode("div", {
+var b = v("div", {
 	"a": "5"
 }, ["Hello!"]);
 
-var b2 = fnode("div", {
+var b2 = v("div", {
 	"a": "5"
-}, ["\n\t\t", fnode("span", {}, ["Hello!"]), "\n\t"]);
+}, ["\n\t\t", v("span", {}, ["Hello!"]), "\n\t"]);
 
-var c = fnode("input", {}, []);
+var c = v("input", {}, []);
 
-var d = hnode(Component, {
+var d = v(Component, {
 	"some-prop": "asd"
-});
+}, []);
 
-var e = hnode(Component, {
-	"some-prop": "asd",
-	"children": ["asd"]
-});
+var e = v(Component, {
+	"some-prop": "asd"
+}, ["asd"]);
 
-var f = hnode(List, {
+var f = v(List, {
 	"items": [1]
-});
+}, []);
 
 var g = function g(_ref) {
 	var items = _ref.items;
-	return fnode("ol", {}, ["\n\t\t", items, "\n\t"]);
+	return v("ol", {}, ["\n\t\t", items, "\n\t"]);
 };
 
-var h = hnode(Component, _extends({
+var h = v(Component, _extends({
 	"a": "5"
-}, props));
+}, props), []);
 
-var i = hnode(Component, {
+var i = v(Component, {
 	"a": x
-});
+}, []);
 
-var j = hnode(Component, {
-	"children": [props.children, props.after, [1, 2, 3]]
-});
+var j = v(Component, {}, [props.children, props.after, [1, 2, 3]]);
 
 exports.default = a;
